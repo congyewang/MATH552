@@ -1,0 +1,64 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+setwd("~/R/MATH552/lab2/")
+```
+
+# 1
+```{r}
+dwaine <- read.table("../datasets/dwaine.dat")
+names(dwaine) <- c("npeople","income","sales")
+# head(dwaine)
+attach(dwaine)
+out <- lm(sales~npeople+income)
+# out$fitted.values
+# out$residuals
+plot(out)
+```
+# 2
+```{r}
+standardresid <- rstandard(out)
+plot(out$fitted, standardresid)
+```
+# 3
+```{r}
+influence.measures(out)
+```
+
+# 4
+```{r}
+birthweight <- read.table("../datasets/birthweight.dat")
+birthweight
+attach(birthweight)
+plot(age,weight)
+bwfit <- lm(weight ~age)
+abline(bwfit)
+```
+
+# 5
+```{r}
+summary(bwfit)
+```
+
+# 6
+```{R}
+t.test(age ~ sex, var.equal=TRUE)
+bwfit2 <- lm(weight ~ sex)
+summary(bwfit2)
+t.test(weight ~ sex, var.equal=TRUE)
+```
+# 7
+```{r}
+bwfit3 <- lm(weight ~ age + sex)
+anova(bwfit,bwfit3)
+```
+# 8
+```{r}
+bwfit4 <- lm(weight ~ age * sex)
+bwfit4a <- lm(weight ~ age + sex + age:sex)
+```
+

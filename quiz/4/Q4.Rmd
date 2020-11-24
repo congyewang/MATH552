@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+---
+
+```{r}
+library(tidyverse)
+library(lmtest)
+```
+
+# 4
+```{r}
+df_3 <- read.csv("data3.csv", header = T)
+df_3$type <- factor(df_3$type)
+df_3$year <- factor(df_3$year)
+df_3$period <- factor(df_3$period)
+```
+
+```{r}
+fit_3 <- glm(incidents ~ type + year + period, weights = service, family = poisson(link = "log"), data = df_3)
+summary.glm(fit_3)
+```
+
+```{r}
+typeB <- as.double(coef(fit_3)["typeB"])
+typeE <- as.double(coef(fit_3)["typeE"])
+exp(typeB) / exp(typeE)
+```
+
+```{r}
+fit_3_1 <- glm(incidents ~ type, weights = service, family = poisson(link = "log"), data = df_3)
+summary.glm(fit_3_1)
+```
+
+```{r}
+typeB_1 <- abs(as.double(coef(fit_3_1)["typeB"]))
+type_Total_1_intercept <- sum(sapply(coef(fit_3_1), exp))
+exp(typeB_1) / type_Total_1_intercept
+type_Total_1_no_intercept <- sum(sapply(coef(fit_3_1)[-1], exp))
+exp(typeB_1) / type_Total_1_no_intercept
+```
+
+# 5
+```{r}
+df_4 <- read.csv("data4.csv", header = T)
+df_4$Deaths_Rate <- df_4$Deaths / df_4$N
+df_4_A <- df_4
+df_4_B <- df_4
+df_4_B$Exposure <- factor(df_4_B$Exposure)
+df_4_B$Rel.Hum <- factor(df_4_B$Rel.Hum)
+df_4_B$Temp <- factor(df_4_B$Temp)
+```
+
+```{r}
+fit_4_A <- glm(Deaths_Rate ~ Species + Exposure + Rel.Hum + Temp, family = binomial(link = "logit"), data = df_4_A)
+summary.glm(fit_4_A)
+```
+
+```{r}
+fit_4_B <- glm(Deaths_Rate ~ Species + Exposure + Rel.Hum + Temp, family = binomial(link = "logit"), data = df_4_B)
+summary.glm(fit_4_B)
+```
+
+```{r}
+anova_fit_4_A_fit_4_B <- anova(fit_4_A, fit_4_B)
+# anova_fit_4_A_fit_4_B
+likelihood_ratio <- lrtest(fit_4_A, fit_4_B)
+likelihood_ratio
+```
